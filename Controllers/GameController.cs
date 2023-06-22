@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
 using System.Net.Http.Headers;
+using System.Xml.Linq;
 
 namespace GameCatalog.Controllers
 {
@@ -34,9 +35,9 @@ namespace GameCatalog.Controllers
         [HttpPost]
         public void Post([FromBody] AddGame request)
         {
-            if(String.IsNullOrEmpty(request.Name))
+            if (String.IsNullOrEmpty(request.Name))
             {
-            throw new Exception("Invalid Input. Name Cannot be Blank");
+                throw new Exception("Invalid Input. Name Cannot be Blank");
             }
             if (String.IsNullOrEmpty(request.Developer))
             {
@@ -44,22 +45,40 @@ namespace GameCatalog.Controllers
             }
             var game = new Game
             {
-            Name = request.Name,
-            Price = request.Price,
-            Developer = request.Developer
-            };  
+                Name = request.Name,
+                Price = request.Price,
+                Developer = request.Developer
+            };
             _dbConnection.Execute("AddGame", game);
-            }
+        }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-
+        public void Put(int id, [FromBody] UpdateGame request)
+        {           
+            if (String.IsNullOrEmpty(request.Name))
+            {
+                throw new Exception("Invalid Input. Name Cannot be Blank");
+            }
+            if (String.IsNullOrEmpty(request.Developer))
+            {
+                throw new Exception("Invalid Input. Name Cannot be Blank");
+            }
+            var game = new Game
+            {
+                Id = id,
+                Name = request.Name,
+                Price = request.Price,
+                Developer = request.Developer
+            };
+            _dbConnection.Execute("UpdateGame", game);       
+            
         }
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-
+            _dbConnection.Query<Game>("DeleteGame", new { Id = id });
         }
     }
 }
+    
+
